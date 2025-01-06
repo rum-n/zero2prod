@@ -13,3 +13,4 @@ name = "zero2prod"
 [dependencies]
 actix-web = {version = "4"}
 tokio = { version = "1", features = ["full"] }
+reqwest = "0.12"
