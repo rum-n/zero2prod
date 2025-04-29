@@ -11,7 +11,7 @@ if ! [ -x "$(command -v sqlx)" ]; then
 fi
 
 # Check if a custom parameter has been set, otherwise use default values
-DB_PORT="${DB_PORT:=5433}"
+DB_PORT="${DB_PORT:=5432}"
 SUPERUSER="${SUPERUSER:=postgres}"
 SUPERUSER_PWD="${SUPERUSER_PWD:=password}"
 APP_USER="${APP_USER:=app}"
@@ -42,19 +42,19 @@ then
       --name "${CONTAINER_NAME}" \
       postgres -N 1000
       # ^ Increased maximum number of connections for testing purposes
-
+      
   until [ \
     "$(docker inspect -f "{{.State.Health.Status}}" ${CONTAINER_NAME})" == \
     "healthy" \
-  ]; do
+  ]; do     
     >&2 echo "Postgres is still unavailable - sleeping"
-    sleep 1
+    sleep 1 
   done
-
+  
   # Create the application user
   CREATE_QUERY="CREATE USER ${APP_USER} WITH PASSWORD '${APP_USER_PWD}';"
   docker exec -it "${CONTAINER_NAME}" psql -U "${SUPERUSER}" -c "${CREATE_QUERY}"
-
+  
   # Grant create db privileges to the app user
   GRANT_QUERY="ALTER USER ${APP_USER} CREATEDB;"
   docker exec -it "${CONTAINER_NAME}" psql -U "${SUPERUSER}" -c "${GRANT_QUERY}"
